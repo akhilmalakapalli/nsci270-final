@@ -1,0 +1,18 @@
+{
+  "requirements.txt": "25e36af0bf20e67774ae66cdb217e673856542db01592c21b406355c1bb69565",
+  "README.md": "6aece97e7fc18e38a901594073be0b4dca885805d74105fe917be2f11fbcf05b",
+  "00_master_data_check_and_preprocessing.ipynb": "ad7db984578dae7fc80d368c40f3baa305cc14d131ea461e22fbb5d740e8b7d1",
+  "HANDOFF.md": "4017d07605cf9e14a57490bc1ddf98230884206814564060e1d6fe64d43cc342",
+  "master_preprocessing/preprocessing_settings.json": "7f65e3c8fc6375662360bd258c8f9e1b7615b4884a833035e1e76ec60be85272",
+  "master_preprocessing/resting-task-2_representative_raw.png": "985db877e3f76b43d42a945f30bb5aeddb808ba50db31c35c73fc593bb791494",
+  "master_preprocessing/participant_inventory.csv": "6f5bb9d3c52751e2594beeef21774cd57aaac3d9d30b387658375b9ad222d7c6",
+  "master_preprocessing/recording_qc.csv": "ba7e33a06a51f423d3af1658d443d480c4b8f764fcb45e6afd66b5b8b52151b8",
+  "master_preprocessing/resting-task-1_features.csv": "bdaa0a05bc993ecccde52a47c0c9ce423a380983bd4e93fcc1c4b4cfec2871dd",
+  "master_preprocessing/resting-task-1_representative_raw.png": "8243ed9436db031afd457ca384eb0201e341dfd3e22f75eb6ce215191cf18525",
+  "master_preprocessing/dataset_check_report.md": "c5e9da31b24d73765923db49fc7265817a7a40bb6ab4e1428dd60e455334f6e9",
+  "master_preprocessing/transferred_participant_check.csv": "344d2784041d5475ff944f2c5765e73f6410c0cd24cc3cdff84933ddcdf43ef8",
+  "master_preprocessing/resting-task-2_features.csv": "07a1287636cd00c429796957e83dddb669d1ebd609168a0a5bf0f914e9c0a4bc",
+  "master_preprocessing/dataset_compatibility.csv": "01f8315d525b9cebd50f4b955fb4d1c3c5b7aca042685b8eb7ce836870a2056e",
+  "master_preprocessing/participant_qc.csv": "b1a67aaff83fe6b1d864ec4bdee00000b030fff5c06a7972a328fb5f74ef6ee6",
+  "master_preprocessing/epoch_qc.csv": "9568ba25564507a0de86b3b7b3290c9c0214c6792ff7a47a8a176d09b242e777"
+}

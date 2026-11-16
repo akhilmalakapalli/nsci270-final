@@ -1,0 +1,6 @@
+participant_id,dataset,chosen,max_dual_fp_correlation,chosen_frontal_ratio,iterations,baseline_epochs,candidate_epochs
+sub-1448,resting-task-1,[1],0.8650798514013289,4.879330243312049,300,72,72
+sub-2009,resting-task-1,[0],0.9747391865761059,4.588351903639649,300,12,74
+sub-2237A,resting-task-2,[],0.49111483071173345,,300,74,74
+sub-2235A,resting-task-2,[0],0.9599306276781461,4.570934783984772,300,8,72
+sub-2267A,resting-task-2,[0],0.927940960959963,4.653754350557905,300,0,19

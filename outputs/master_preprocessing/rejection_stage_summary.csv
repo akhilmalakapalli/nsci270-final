@@ -1,0 +1,3 @@
+dataset,total_epochs,annotation_rejected_epochs,pre_reference_high_failed,pre_reference_flat_failed,post_reference_candidates,post_reference_high_failed,post_reference_flat_failed,retained_epochs,baseline_49ch_retained_epochs
+resting-task-1,6068,0,1901,10,4158,3,2,4153,4083
+resting-task-2,4514,0,2559,0,1955,3,0,1952,1861
