@@ -1,0 +1,39 @@
+{
+  "description": "Frozen preprocessing used by Experiment 1 (revision 2 + Section 4 text fix). Do not modify.",
+  "frozen_at_local": "2026-11-16T12:46:25-05:00",
+  "frozen_at_utc": "2026-11-16T17:46:25+00:00",
+  "source_git_commit": "03815af",
+  "sample": {
+    "resting-task-1": {
+      "participants": 75,
+      "Control": 29,
+      "Psychosis": 46
+    },
+    "resting-task-2": {
+      "participants": 35,
+      "Control": 14,
+      "Psychosis": 21
+    }
+  },
+  "sha256": {
+    "00_master_data_check_and_preprocessing.ipynb": "b4f1f5f5347eadd3550f925d2490eedccb929bd0064c396b491e25d60cdb83ab",
+    "master_preprocessing/cleaning_resting-task-1_sub-2015.png": "387a73b935e6f8ff1cff52b58563069d1d03af9f18349fd91ba71f55c285f0a0",
+    "master_preprocessing/cleaning_resting-task-2_sub-2426A.png": "b35e79f944fef2eeab945f3a2b9032f6f6e108e30f420f8c7c2dbed9de2304cb",
+    "master_preprocessing/cleaning_resting-task-2_sub-2431A.png": "a56d4ab4eb58f51bebf76ce077708600366557ee62bdbb40fc216d5c67b5cfec",
+    "master_preprocessing/cleaning_resting-task-2_sub-2505A.png": "d60380b3b53208fad57a1fde3bcc7d8f3ce1de50cca6d49553f7c30c39fd9676",
+    "master_preprocessing/dataset_check_report.md": "068f0d1168df11c3d536bbd019850a0ce85b3529bf0d17dbfff2d48326bc9b50",
+    "master_preprocessing/dataset_compatibility.csv": "01f8315d525b9cebd50f4b955fb4d1c3c5b7aca042685b8eb7ce836870a2056e",
+    "master_preprocessing/epoch_qc.csv": "a7ed6527ddfe415fc0c7056ea745d5d52ff1e8d4cdd48f6e47c2d83c6ea7226e",
+    "master_preprocessing/participant_inventory.csv": "6f5bb9d3c52751e2594beeef21774cd57aaac3d9d30b387658375b9ad222d7c6",
+    "master_preprocessing/participant_qc.csv": "711ad6e81d7d6205b9361248d4a1b3201f0cb32aff39533e28f269dabd721023",
+    "master_preprocessing/preprocessing_settings.json": "51585bf7d092f1a4f28169e9dba1a17ae60058e1598667eb8489f049678797b2",
+    "master_preprocessing/recording_qc.csv": "6aa206e656a2298f914cfbe1e62cc18707e4120198aa22a8cf840572275f804c",
+    "master_preprocessing/rejection_channel_summary.csv": "235cfafc50a3fc286dd75656ce5f431c5c206446814e474320a98a2e09fe0134",
+    "master_preprocessing/rejection_stage_summary.csv": "ae93c6d5500db4194a3793ab9df09a872b58b36f4a2193564cd6089bbcd22277",
+    "master_preprocessing/resting-task-1_features.csv": "7889e86a60a98bf079915ba49c038857e4e07387729ee15dc5b07c1eb9bfba1c",
+    "master_preprocessing/resting-task-1_representative_raw.png": "8243ed9436db031afd457ca384eb0201e341dfd3e22f75eb6ce215191cf18525",
+    "master_preprocessing/resting-task-2_features.csv": "b5ba5d097f34a9d8665b2d16cfe0dbb1264db85b3e40a42ed4348aa1f53c2237",
+    "master_preprocessing/resting-task-2_representative_raw.png": "985db877e3f76b43d42a945f30bb5aeddb808ba50db31c35c73fc593bb791494",
+    "master_preprocessing/transferred_participant_check.csv": "344d2784041d5475ff944f2c5765e73f6410c0cd24cc3cdff84933ddcdf43ef8"
+  }
+}

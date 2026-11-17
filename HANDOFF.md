@@ -601,3 +601,276 @@ Interpretation:
 - **Modified:** the notebook (one Markdown sentence and one settings string; re-executed); `outputs/master_preprocessing/preprocessing_settings.json` and `dataset_check_report.md` (one sentence each); `README.md` (archive pointers).
 - `git diff --stat -- data` is empty.
 - Nothing is committed; the same untracked set as Section 2.7 plus the files above.
+
+# Section 5 — Preprocessing frozen; Experiment 1 (cross-dataset classification), as of November 16, 2026, 12:49:29 PM EST
+
+Timestamp: **2026-11-16 12:49:29 America/New_York (EST, UTC−05:00)** / **2026-11-16 17:49:29 UTC**. Daylight saving time is not in effect on this date.
+
+## 5.1 Workspace state verified before starting
+
+- Git: the user had already committed all Sections 1–4 work as `03815af` ("new", 2026-11-16 12:45 −05:00) and pushed it; `main` matched `origin/main` and the working tree was clean. Section 4.5's "nothing is committed" was therefore out of date when this work began.
+- Saved tables match the expected sample. In `outputs/master_preprocessing`, the feature tables and `participant_qc.csv` agree on **Task 1: 75 (29 Control, 46 Psychosis)** and **Task 2: 35 (14 Control, 21 Psychosis)**, 110 in total. The baseline archive's manifest verified with no mismatches: 74 (29/45) and 33 (14/19).
+- The existing `outputs/revision2_2026-11-10_151143_EST` snapshot does **not** exactly match the current state: `preprocessing_settings.json` and `dataset_check_report.md` differ by the Section 4 sentence, and the notebook was re-executed. It was therefore not reused.
+
+## 5.2 Preprocessing frozen
+
+Snapshot: `outputs/frozen_preprocessing_2026-11-16_124625_EST/`. It holds 19 files: the preprocessing notebook and all 18 files of `outputs/master_preprocessing` (settings, both feature tables, participant/recording/epoch QC, rejection summaries, plots and report). It also has `sha256_manifest.json` (frozen-at time, source commit `03815af`, sample counts, and a hash for every file). Every file was verified identical to its live copy, both at creation and again after Experiment 1 ran. No preprocessing, exclusion, channel, band or duration setting was changed, and no ICA or recovery was attempted.
+
+## 5.3 Experiment 1 design (`01_band_power_cross_dataset_classification.ipynb`, 11 cells)
+
+- **Question:** can logistic regression trained on Task 1 distinguish first-episode psychosis from healthy controls in held-out Task 2? **Primary hypothesis:** Task 2 ROC-AUC > 0.50.
+- **Predictors:** only `relative_delta`, `relative_theta`, `relative_alpha` and `relative_beta`. **Labels:** Control = 0 and Psychosis = 1 (the source label `Psychosis` is defined as first-episode psychosis).
+- **Inputs:** read from the frozen snapshot (primary) and the baseline archive (sensitivity), with each file checked against its manifest. Checks also cover: one row per participant; no ID overlap; only valid labels with both groups present; the same four finite numeric features; feature IDs and diagnoses matching the included rows of the frozen `participant_qc.csv`; and the exact expected counts.
+- **Model:** `Pipeline(StandardScaler(), LogisticRegression(l1_ratio=0.0, C=1.0, solver="lbfgs", max_iter=1000, class_weight=None))`. In scikit-learn 1.9.1, `penalty="l2"` is deprecated; `l1_ratio=0.0` is the equivalent pure L2 and the default. It is fitted on Task 1 only. The notebook asserts that the scaler's mean and SD equal the Task 1 statistics and that `predict_proba` column 1 is class 1. Task 2 is used only to evaluate the unchanged model; there is no tuning, feature selection or extra models. The four relative powers sum to one, so the coefficients are not interpreted as independent effects.
+- **Bootstrap:** 2,000 resamples of Task 2 participants, drawn with replacement *within* each diagnostic group, recomputing AUC from fixed predicted probabilities without refitting. Seed 270 (the same for both analyses); percentile 2.5–97.5 interval. It reflects test-sample uncertainty given the fitted model, not training-sample uncertainty.
+- **Secondary metrics:** threshold 0.50, giving accuracy, sensitivity, specificity, F1 (psychosis) and the confusion matrix.
+
+## 5.4 Results (actual)
+
+| | Primary (frozen, 110) | Sensitivity (original baseline, 107) |
+| --- | --- | --- |
+| Training: n (Control/Psychosis) | 75 (29/46) | 74 (29/45) |
+| Test: n (Control/Psychosis) | 35 (14/21) | 33 (14/19) |
+| **Test ROC-AUC (95% bootstrap CI)** | **0.476 (0.262–0.684)** | **0.485 (0.267–0.684)** |
+| CI includes 0.50 | yes | yes |
+| Accuracy / sensitivity / specificity / F1 | 0.571 / 0.810 / 0.214 / 0.694 | 0.606 / 0.789 / 0.357 / 0.698 |
+| TN / FP / FN / TP | 3 / 11 / 4 / 17 | 5 / 9 / 4 / 15 |
+
+- **The primary hypothesis is not supported.** The point estimate is slightly below 0.50 and the wide interval includes 0.50, so this test sample shows no evidence of above-chance discrimination.
+- At threshold 0.50 the model predicted psychosis for 28 of 35 participants (high sensitivity, low specificity). Its accuracy (0.571) is below the 0.600 obtained by always predicting the majority class. This is consistent with Task 1's 61% psychosis share and no class weighting.
+- The sensitivity analysis reaches the same conclusion. The training and test samples both differ (one recovered participant in training and two in testing), so the small differences cannot be attributed only to channel omission. The 110-participant version remains primary; it was not chosen by AUC.
+- Standardized coefficients (primary): delta 0.107, theta 0.079, alpha −0.309, beta 0.390. These are not independent biological effects.
+
+## 5.5 Checks actually run
+
+- The notebook was executed twice top to bottom in fresh `.venv` kernels with `nbclient` (execution counts 1–6, no errors, all assertions passed); the second run added a computed majority-class note to the summary and reproduced identical metrics.
+- Independent script checks:
+  - Test AUC recomputed from the saved probabilities via the Mann–Whitney U statistic matches exactly for both analyses.
+  - A separate refit with Task 1 mean/SD scaling done by hand reproduces every test probability (maximum difference 0.0).
+  - `true_label` matches the diagnosis mapping, `predicted_label` equals probability ≥ 0.50, and prediction IDs equal the test-file IDs.
+  - The confusion-matrix counts sum to the test n with the correct group totals.
+- The ROC and confusion-matrix figures were inspected visually. `git diff --stat -- data` is empty.
+
+## 5.6 Files created or changed
+
+- **New:**
+  - `01_band_power_cross_dataset_classification.ipynb` (executed).
+  - `outputs/frozen_preprocessing_2026-11-16_124625_EST/`.
+  - `outputs/experiment_1/`: `test_predictions.csv` (68 test rows with `analysis_version`), `metrics.csv`, `primary_roc_curve.png`, `primary_confusion_matrix.png`, `experiment_settings.json` (model, seed, package versions, input SHA-256s) and `results_summary.md`.
+- **Changed:** `requirements.txt` (added `scikit-learn==1.9.1`, installed into `.venv` together with its dependencies), `README.md` (Experiment 1 section) and this handoff.
+- **Input SHA-256 prefixes** (full values in `experiment_settings.json`):
+  - Primary: Task 1 features `7889e86a60a98bf0`, Task 2 features `b5ba5d097f34a9d8`, participant QC `711ad6e81d7d6205`.
+  - Baseline: `bdaa0a05bc993ecc`, `07a1287636cd00c4`, `b1a67aaff83fe6b1`.
+
+## 5.7 Limitations and Git status
+
+- **Uneven exclusions:** 8.5% in Task 1 versus 42.6% in Task 2, mostly frontal (likely ocular) artifacts; retained participants may not represent the cohorts.
+- **Differing channel sets:** three recovered participants use 48 channels instead of 49.
+- **Small test set:** 35 participants (14 controls), so the AUC interval is wide.
+- **Independence:** person-level independence is unconfirmed (no ID overlap only), and Task 1 includes ten acquisition-2 participants.
+- **Interval scope:** the CI omits training-sample uncertainty.
+- **Use:** this is not a clinically validated diagnostic tool.
+
+**Git:** nothing from this section was committed or pushed. Untracked: the Experiment 1 notebook, `outputs/experiment_1/` and `outputs/frozen_preprocessing_2026-11-16_124625_EST/`. Modified: `README.md`, `requirements.txt` and `HANDOFF.md`.
+
+# Section 6 — Experiment 1 rebuilt with Dataset 1-only model selection (revised exploratory analysis), as of November 16, 2026, 12:57:23 PM EST
+
+Timestamp: **2026-11-16 12:57:23 America/New_York (EST, UTC−05:00)** / **2026-11-16 17:57:23 UTC**. Daylight saving time is not in effect on this date.
+
+## 6.1 Why Experiment 1 was revised
+
+The Section 5 experiment used fixed settings (C = 1, no class weighting). The revision asks a slightly broader Question 1: is ROC-AUC above chance, **and** is performance balanced across groups? It chooses C and class weighting by cross-validation within Dataset 1, adds balanced accuracy and a majority-class benchmark, and uses 5,000 bootstrap resamples. The purpose was a more careful analysis, not a positive result.
+
+**Prior exposure:** the Dataset 2 results had already been seen (Section 5). This is therefore a **revised exploratory analysis, not a first external validation**. Keeping Dataset 2 out of selection in this rerun does not undo that exposure. The original and revised methods were not chosen between by test AUC.
+
+## 6.2 Verified state, archive, deletion and replacement
+
+- **Verified before changes:**
+  - The working tree matched Section 5.7 (Section 5 work still uncommitted; `main` at `03815af`, equal to `origin/main`).
+  - `outputs/experiment_1/metrics.csv` held the Section 5 results.
+  - The frozen and baseline snapshots matched their manifests, and the frozen settings were unchanged (revision 2, the same bands, 60 s minimum).
+- **Archived:** `outputs/archive_experiment_1_original_2026-11-16_125350_EST/` holds the original notebook and the six original `outputs/experiment_1/` files under `experiment_1/`, plus `sha256_manifest.json` with the archive time and original paths. All 7 files were verified identical to the originals before deletion, and the archive was verified intact again after the new run.
+- **Deleted:** the old active `01_band_power_cross_dataset_classification.ipynb` and the old active `outputs/experiment_1/` folder. The folder was removed only after verifying its archived copy, so it could not be confused with the revised results.
+- **Replaced:** a newly written `01_band_power_cross_dataset_classification.ipynb` (13 cells), with outputs in the new folder `outputs/experiment_1_revised/`.
+- **Not touched:** source data, both preprocessing snapshots, `outputs/master_preprocessing`, and earlier handoff sections.
+
+## 6.3 Revised method
+
+- **Inputs and checks:** the frozen 110-participant version (Dataset 1: 75, 29 Control / 46 Psychosis; Dataset 2: 35, 14 / 21) and the 107-participant baseline (74, 29/45; 33, 14/19). Each file is checked against its manifest. The notebook also checks one row per participant, no ID overlap, valid labels with both groups present, the same four finite numeric features, and exact agreement with the included rows and diagnoses in `participant_qc.csv`.
+- **Predictors and labels:** only relative delta, theta, alpha and beta power. Control = 0, Psychosis = 1 (first-episode psychosis).
+- **Pipeline:** `StandardScaler` → `LogisticRegression(l1_ratio=0.0 [pure L2], solver="lbfgs", max_iter=1000, C, class_weight)`.
+- **Training-only selection:**
+  - Fixed grid: C ∈ {0.1, 1, 10} × class_weight ∈ {None, "balanced"}.
+  - Scored by mean ROC-AUC on one shuffled stratified 5-fold split of Dataset 1 (`random_state=270`, the same folds for every candidate). `cross_val_score` refits the whole pipeline per fold, so scaling is fitted inside each fold.
+  - Tie-break, written in the notebook before running: highest mean AUC rounded to 10 decimals, then smaller C, then `None` before `"balanced"`. No tie occurred at the top.
+  - The CV scores and selected settings were saved to `training_cv_scores.csv` and `selected_settings.json` **before** any revised Dataset 2 metric was calculated, and the final models were built from the saved file (file timestamps confirm the order).
+- **Test evaluation:** the locked pipeline is fitted on all of Dataset 1 and applied unchanged to Dataset 2, with a fixed threshold of 0.50 (not chosen from Dataset 2).
+- **Bootstrap:** 5,000 resamples of Dataset 2 participants drawn with replacement within each diagnostic group, using fixed predicted probabilities and no refitting (seed 270); percentile 2.5–97.5. This is test-sample uncertainty conditional on the fitted model; it omits training-sample and model-selection uncertainty.
+
+Training CV mean ROC-AUC (SD across folds):
+
+| C / class_weight | Primary (110) | Baseline (107) |
+| --- | --- | --- |
+| 0.1 / None | **0.635** (0.089) | 0.598 (0.135) |
+| 0.1 / balanced | 0.631 (0.083) | 0.598 (0.135) |
+| 1 / None | 0.627 (0.078) | 0.595 (0.146) |
+| 1 / balanced | 0.627 (0.078) | 0.595 (0.146) |
+| 10 / None | 0.627 (0.078) | **0.603** (0.138) |
+| 10 / balanced | 0.627 (0.078) | 0.599 (0.144) |
+
+Selected: **primary C = 0.1, None; baseline C = 10, None.** Differences between candidates (≤ 0.008) are far smaller than the fold-to-fold SD, so the choice is essentially arbitrary among near-equivalent options. A fuller internal-versus-external comparison belongs to Question 2.
+
+## 6.4 Results: original versus revised, kept distinct
+
+| Dataset 2 | Original (Section 5; C = 1, no weighting; 2,000 resamples) | **Revised primary (110; C = 0.1)** | Revised sensitivity (107; C = 10) |
+| --- | --- | --- | --- |
+| ROC-AUC (95% CI) | 0.476 (0.262–0.684) | **0.497 (0.289–0.704)** | 0.481 (0.271–0.684) |
+| CI includes 0.50 | yes | **yes** | yes |
+| Balanced accuracy | 0.512 (computed from the archived counts) | **0.548** | 0.547 |
+| Accuracy (majority-class benchmark) | 0.571 (0.600) | 0.629 (0.600) | 0.576 (0.576) |
+| Sensitivity / specificity | 0.810 / 0.214 | 0.952 / 0.143 | 0.737 / 0.357 |
+| F1 (psychosis) | 0.694 | 0.755 | 0.667 |
+| TN / FP / FN / TP | 3 / 11 / 4 / 17 | 2 / 12 / 1 / 20 | 5 / 9 / 5 / 14 |
+
+Interpretation:
+- **The primary hypothesis is not supported.** The revised AUC is essentially 0.50 and its interval comfortably includes 0.50.
+- **Performance is not balanced.** Balanced accuracy is 0.548, close to the 0.50 chance benchmark. The model calls almost everyone psychosis (32 of 35): high sensitivity but specificity of 0.143 (2 of 14 controls correct). Its accuracy (0.629) is barely above always predicting psychosis (0.600).
+- **The sensitivity check reaches the same conclusion.** Training and test membership both differ between versions, so this is not an isolated test of channel omission. The 110-participant version remains primary.
+- The original and revised results are both preserved; the revision does not replace the original on performance grounds.
+
+## 6.5 Checks actually run
+
+- The notebook was executed twice top to bottom in fresh `.venv` kernels with `nbclient` (execution counts 1–7, no errors, all in-notebook assertions passed). The second run only split the confusion-matrix title onto two lines, and `test_metrics.csv` was byte-identical across runs.
+- **In-notebook assertions:**
+  - hand-refitting the selected candidate on each fold reproduces its CV fold scores;
+  - the final scaler mean and SD equal the Dataset 1 statistics;
+  - `predict_proba` column 1 is class 1, and prediction IDs equal the test IDs in order;
+  - the confusion-matrix group totals are correct;
+  - sensitivity equals `recall_score`, and balanced accuracy equals (sensitivity + specificity)/2.
+- **Independent script checks:**
+  - CV for all 12 candidate/version combinations, with hand-written in-fold scaling, matches the saved means, and the tie-break reproduces both selections;
+  - the final refit reproduces every test probability;
+  - Mann–Whitney AUC, balanced accuracy, majority-class accuracy and the 5,000-resample bootstrap CI all match exactly.
+- The frozen snapshot and original-experiment archive manifests verify intact. Both figures were inspected. `git diff --stat -- data` is empty.
+
+## 6.6 Files
+
+- **New:**
+  - `01_band_power_cross_dataset_classification.ipynb` (rewritten).
+  - `outputs/experiment_1_revised/`: `training_cv_scores.csv`, `selected_settings.json`, `test_predictions.csv` (68 test rows with `analysis_version`), `test_metrics.csv`, `primary_roc_curve.png`, `primary_confusion_matrix.png`, `experiment_settings.json` (grid, CV, rule, selections, bootstrap, coefficients flagged as non-independent, input SHA-256s, package versions) and `results_summary.md`.
+  - `outputs/archive_experiment_1_original_2026-11-16_125350_EST/`.
+- **Deleted:** the old notebook and `outputs/experiment_1/` (both archived).
+- **Changed:** `README.md` (Experiment 1 section rewritten) and this handoff.
+- Note: pandas reads the string `None` in `training_cv_scores.csv`'s `class_weight` column as missing unless `keep_default_na=False` is used.
+
+## 6.7 Limitations and Git status
+
+- **Prior exposure:** Dataset 2 had already been seen.
+- **Small test set:** 35 participants, 14 controls.
+- **Interval scope:** the CI omits training and model-selection uncertainty.
+- **Arbitrary selection:** near-equal CV scores make the setting choice essentially arbitrary.
+- **Uneven exclusions:** 8.5% versus 42.6%.
+- **Differing channel sets:** three recovered participants use 48 channels.
+- **Independence:** person-level independence is unconfirmed, and Dataset 1 includes ten acquisition-2 participants.
+- **Dependent features:** the features sum to one, so coefficients are not independent effects.
+- **Use:** this is not a clinical tool.
+
+**Git:** nothing from Sections 5–6 is committed or pushed; `main` is still at `03815af`. Untracked: the notebook, `outputs/experiment_1_revised/`, `outputs/archive_experiment_1_original_2026-11-16_125350_EST/` and `outputs/frozen_preprocessing_2026-11-16_124625_EST/`. Modified: `HANDOFF.md`, `README.md` and `requirements.txt`.
+
+# Section 7 — Experiment 2: within-Dataset 1 (nested CV) versus Dataset 2 performance, as of November 16, 2026, 1:04:36 PM EST
+
+Timestamp: **2026-11-16 13:04:36 America/New_York (EST, UTC−05:00)** / **2026-11-16 18:04:36 UTC**. Daylight saving time is not in effect on this date.
+
+## 7.1 Question, status and verified starting state
+
+**Question 2:** how much does classification performance change from evaluation within Dataset 1 to evaluation on held-out Dataset 2? The direction was not assumed. This is an exploratory follow-up, because Dataset 2 had already been examined in Experiment 1.
+
+Verified before implementing:
+- The workspace matched Section 6.7: Sections 5–6 uncommitted, `main` at `03815af`, equal to `origin/main`.
+- The frozen snapshot and original-experiment archive verified intact.
+- `outputs/experiment_1_revised` held primary C = 0.1 / None and external AUC 0.4966 (0.289–0.704).
+- SHA-256 values for 28 existing files (the Experiment 1 notebook and outputs, the preprocessing notebook, and `outputs/master_preprocessing`) were recorded before work began and re-verified unchanged afterwards.
+
+## 7.2 Exact method (`02_within_vs_cross_dataset_performance.ipynb`, 14 cells)
+
+- **Sample:** the frozen primary version. Dataset 1 has 75 participants (29 Control / 46 Psychosis); Dataset 2 has 35 (14 / 21). The notebook checks manifest hashes, counts, diagnosis mapping (Control = 0, Psychosis = 1), unique and non-overlapping IDs, four finite features, and agreement with `participant_qc.csv`.
+- **Predictors:** only relative delta, theta, alpha and beta power.
+- **Pipeline (same as revised Experiment 1):** `StandardScaler` → `LogisticRegression(l1_ratio=0.0 [L2], solver="lbfgs", max_iter=1000, C, class_weight)`. Grid: C ∈ {0.1, 1, 10} × class_weight ∈ {None, "balanced"}. Threshold 0.50.
+- **Nested CV (seeds fixed before running):**
+  - Outer loop: `StratifiedKFold(5, shuffle=True)` repeated with seeds **101, 202, 303, 404, 505**.
+  - Inner loop: `StratifiedKFold(5, shuffle=True, random_state=<repeat seed>)` on the outer training split only.
+  - Selection by mean inner ROC-AUC, with Experiment 1's tie-break (highest mean rounded to 10 decimals, then smaller C, then `None` before `"balanced"`).
+  - The selected pipeline is refitted on the outer training split (~60 participants) and predicts the outer test fold (15 participants: 5–6 controls, 9–10 psychosis).
+  - Seeds, folds and grid were not changed after results were seen.
+- **Internal summary:** each repeat's AUC is the mean of its 5 outer-fold AUCs. Threshold metrics are computed from each repeat's complete out-of-fold predictions, then averaged over repeats. Repeats are not pooled as extra participants.
+- **External:** the revised Experiment 1 primary predictions were reused, not re-selected or refitted. The notebook verifies they reproduce AUC 0.4966, match the frozen Dataset 2 IDs (in order) and labels, and reproduce the saved balanced accuracy. The Experiment 1 bootstrap CI (5,000 stratified resamples) is reused.
+- **Gap:** mean nested-CV internal AUC − Dataset 2 AUC; positive means lower external performance. It is descriptive: no p-value and no CI for the gap.
+
+## 7.3 Results (actual)
+
+| | Internal: nested CV, mean of 5 repeats | External: Dataset 2 (Experiment 1 model) | Internal − external |
+| --- | --- | --- | --- |
+| ROC-AUC | **0.615** | **0.497** (95% CI 0.289–0.704) | **+0.118** |
+| Balanced accuracy | 0.555 | 0.548 | +0.007 |
+| Sensitivity | 0.778 | 0.952 | −0.174 |
+| Specificity | 0.331 | 0.143 | +0.188 |
+| Accuracy | 0.605 | 0.629 | −0.023 |
+
+- **Split variability (not CIs):**
+  - Repeat internal AUCs: 0.582, 0.631, 0.659, 0.581, 0.621 (range 0.581–0.659).
+  - Single outer-fold AUCs: 0.280–0.852.
+  - Per-repeat gaps: +0.085, +0.134, +0.163, +0.084, +0.125.
+- **Settings chosen across the 25 outer folds:** C = 0.1/None 9, 0.1/balanced 3, 1/None 6, 1/balanced 2, 10/None 3, 10/balanced 2. The choice is unstable, consistent with near-flat inner scores.
+- **Interpretation:**
+  - AUC was **lower on Dataset 2** than internally, by 0.118, and every repeat pointed the same way.
+  - Internal performance itself was modest (AUC 0.615, balanced accuracy 0.555), with low specificity in both settings.
+  - The internal mean lies inside the wide external interval, so the size of the gap is very imprecise. No significance is claimed.
+  - Threshold-based balanced accuracy barely differed (0.555 versus 0.548); the external model traded more specificity for sensitivity.
+- **Context only:** Experiment 1's selection score of 0.635 is optimistic. 0.635 − 0.497 is **not** the corrected gap.
+
+## 7.4 What the comparison can and cannot establish
+
+- Outer-fold models train on about 60 participants, while the external model trains on all 75. This compares the same development **procedure**, not one fitted model.
+- Sample composition, size, acquisition and exclusions (8.5% versus 42.6%) differ between datasets, so no single cause of the gap can be isolated.
+- Dataset 2 was already examined, so this is exploratory.
+- Person-level independence is unconfirmed (only exact-ID overlap was ruled out). Dataset 1 includes ten acquisition-2 participants, so dataset membership is not acquisition membership.
+
+## 7.5 Checks actually run
+
+- The notebook was executed twice top to bottom in fresh `.venv` kernels with `nbclient` (execution counts 1–7, no errors, ~5 s). The second run only added a computed sentence to the summary about the interval containing the internal mean; fold and summary metrics were byte-identical.
+- **In-notebook assertions:**
+  - no ID is in both the training and test parts of any outer fold;
+  - every inner split's participants are a subset of the outer-training IDs;
+  - the outer-model scaler mean equals the outer-training mean (scaling inside the pipeline);
+  - classes are [0, 1], so column 1 is psychosis;
+  - each participant receives exactly one outer prediction per repeat;
+  - balanced accuracy equals (sensitivity + specificity)/2;
+  - the external predictions reproduce Experiment 1's AUC and balanced accuracy and match the frozen Dataset 2 IDs and labels.
+- **Independent script:**
+  - Reimplemented the full nested CV with hand-written in-fold scaling. All 25 outer-fold selections, test probabilities, IDs and fold AUCs match.
+  - Repeat AUC equals the mean of the fold AUCs; repeat balanced accuracies, threshold predictions and labels match.
+  - All 28 pre-run file hashes verify unchanged; the frozen snapshot and original archive manifests verify; `git diff --stat -- data` is empty.
+- The comparison figure was inspected.
+
+## 7.6 Files and Git status
+
+- **New:**
+  - `02_within_vs_cross_dataset_performance.ipynb`.
+  - `outputs/experiment_2/`:
+    - `nested_cv_outer_predictions.csv`: 375 rows (5 repeats × 75), with repeat, seed, outer fold, ID, labels and probabilities.
+    - `nested_cv_fold_metrics.csv`: fold AUCs plus the settings chosen in each outer fold.
+    - `nested_cv_repeat_metrics.csv`.
+    - `nested_cv_inner_candidate_scores.csv`.
+    - `summary_metrics.csv`.
+    - `internal_vs_external_auc.png`.
+    - `experiment_settings.json`: seeds, grid, rule, results, input SHA-256s including the Experiment 1 files, and package versions.
+    - `results_summary.md`.
+- **Changed:** `README.md` (Experiment 2 section) and this handoff. Preprocessing, inclusion, features and Experiment 1 are unchanged.
+- **Limitations:**
+  - Small samples (75 / 35).
+  - The gap has no uncertainty estimate.
+  - Unstable setting selection.
+  - Uneven exclusions, and three recovered participants use 48 channels.
+  - The features sum to one.
+  - Not a clinical tool.
+- **Git:** nothing from Sections 5–7 is committed or pushed; `main` is at `03815af`. Untracked: the two experiment notebooks, `outputs/experiment_1_revised/`, `outputs/experiment_2/`, `outputs/archive_experiment_1_original_2026-11-16_125350_EST/` and `outputs/frozen_preprocessing_2026-11-16_124625_EST/`. Modified: `HANDOFF.md`, `README.md` and `requirements.txt`.

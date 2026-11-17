@@ -1,0 +1,128 @@
+{
+  "maximum_input_seconds": 300.0,
+  "filter_hz": [
+    0.5,
+    40.0
+  ],
+  "filter_method": "4th-order Butterworth, zero-phase forward/backward, SOS",
+  "sampling_hz": 200.0,
+  "edge_trim_seconds": 2.0,
+  "epoch_seconds": 4.0,
+  "reject_peak_to_peak_uv": 200.0,
+  "reject_flat_peak_to_peak_uv": 1.0,
+  "minimum_usable_seconds": 60.0,
+  "welch_window_seconds": 2.0,
+  "welch_overlap_fraction": 0.5,
+  "bands_hz": {
+    "delta": [
+      1,
+      4
+    ],
+    "theta": [
+      4,
+      8
+    ],
+    "alpha": [
+      8,
+      13
+    ],
+    "beta": [
+      13,
+      30
+    ]
+  },
+  "total_power_hz": [
+    1,
+    30
+  ],
+  "isolated_bad_channel_rule": {
+    "minimum_failed_epoch_fraction": 0.9,
+    "minimum_ratio_to_median_channel_peak_to_peak": 5.0,
+    "maximum_absolute_correlation_with_any_channel": 0.4,
+    "maximum_channels_omitted": 1,
+    "action": "omit from average reference, epoch screening, and channel-averaged features; no interpolation"
+  },
+  "reference": "average of the retained shared scalp channels (49, or 48 if one isolated bad channel is omitted)",
+  "channel_mapping": "ordered first 60 channels.tsv rows; case normalized to uppercase",
+  "units": "microV from channels.tsv; MNE default unit and resolution for EEGLAB export",
+  "multiple_recordings": "exclude pending a study-specific aggregation decision",
+  "shared_channels": [
+    "AF3",
+    "AF4",
+    "AF7",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6",
+    "CP1",
+    "CP2",
+    "CP3",
+    "CP4",
+    "CZ",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "FC1",
+    "FC2",
+    "FC5",
+    "FC6",
+    "FP1",
+    "FP2",
+    "FT7",
+    "FT8",
+    "FZ",
+    "O1",
+    "O2",
+    "OZ",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "PO3",
+    "PO4",
+    "PO7",
+    "PO8",
+    "PZ",
+    "T7",
+    "T8",
+    "TP7",
+    "TP8"
+  ],
+  "datasets": {
+    "resting-task-1": {
+      "accession": "ds003944",
+      "version": "1.0.1",
+      "role": "train"
+    },
+    "resting-task-2": {
+      "accession": "ds003947",
+      "version": "1.0.1",
+      "role": "test"
+    }
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "mne": "1.13.2"
+  },
+  "python": "3.14.7",
+  "feature_definition": "mean over retained channels of band/total from epoch-averaged Welch PSD; 0.5 Hz bin sums",
+  "revision": "2: isolated bad-channel omission and staged high/flat rejection logging; thresholds unchanged",
+  "unresolved": [
+    "Person-level independence cannot be established from IDs and the READMEs alone",
+    "Channel order and scale follow BIDS/EEGLAB conventions, without original acquisition cross-check",
+    "Hardware filtering, complete processing history, and original artifact annotations unavailable",
+    "Widespread frontal transients consistent with eye artifacts remain the main cause of epoch loss; ocular ICA converged and its component tracked blinks, but removal altered blink-free intervals beyond pre-set limits, so it is not applied"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "question": "Question 1: Dataset 1-developed logistic regression on held-out Dataset 2",
+  "status": "revised exploratory analysis; Dataset 2 results were seen in the original experiment",
+  "features": [
+    "relative_delta",
+    "relative_theta",
+    "relative_alpha",
+    "relative_beta"
+  ],
+  "label_codes": {
+    "Control": 0,
+    "Psychosis": 1
+  },
+  "grid": {
+    "C": [
+      0.1,
+      1,
+      10
+    ],
+    "class_weight": [
+      "None",
+      "balanced"
+    ]
+  },
+  "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=270) on Dataset 1 only",
+  "selection_rule": "highest mean 5-fold CV ROC-AUC (rounded to 10 decimals); ties -> smaller C, then class_weight None",
+  "selected": {
+    "primary_110": {
+      "C": 0.1,
+      "class_weight": null,
+      "mean_cv_auc": 0.6351111111111111
+    },
+    "sensitivity_baseline_107": {
+      "C": 10.0,
+      "class_weight": null,
+      "mean_cv_auc": 0.6029629629629629
+    }
+  },
+  "pipeline": "StandardScaler -> LogisticRegression(l1_ratio=0.0 [L2], solver='lbfgs', max_iter=1000, C, class_weight)",
+  "threshold": 0.5,
+  "bootstrap": {
+    "resamples": 5000,
+    "stratified_by": "diagnosis",
+    "random_seed": 270,
+    "interval": "percentile 2.5-97.5 of test AUC; fixed predictions; no refitting"
+  },
+  "standardized_coefficients_not_independent_effects": {
+    "primary_110": {
+      "relative_delta": 0.09695536491503577,
+      "relative_theta": 0.054873378885886295,
+      "relative_alpha": -0.2259869354352464,
+      "relative_beta": 0.25083402862988247
+    },
+    "sensitivity_baseline_107": {
+      "relative_delta": 0.11703829549022673,
+      "relative_theta": 0.09306304103109587,
+      "relative_alpha": -0.3380912934382905,
+      "relative_beta": 0.41776246007185974
+    }
+  },
+  "input_sha256": {
+    "primary_110": {
+      "frozen_preprocessing_2026-11-16_124625_EST/master_preprocessing/resting-task-1_features.csv": "7889e86a60a98bf079915ba49c038857e4e07387729ee15dc5b07c1eb9bfba1c",
+      "frozen_preprocessing_2026-11-16_124625_EST/master_preprocessing/resting-task-2_features.csv": "b5ba5d097f34a9d8665b2d16cfe0dbb1264db85b3e40a42ed4348aa1f53c2237",
+      "frozen_preprocessing_2026-11-16_124625_EST/master_preprocessing/participant_qc.csv": "711ad6e81d7d6205b9361248d4a1b3201f0cb32aff39533e28f269dabd721023"
+    },
+    "sensitivity_baseline_107": {
+      "baseline_2026-11-10_145427_EST/master_preprocessing/resting-task-1_features.csv": "bdaa0a05bc993ecccde52a47c0c9ce423a380983bd4e93fcc1c4b4cfec2871dd",
+      "baseline_2026-11-10_145427_EST/master_preprocessing/resting-task-2_features.csv": "07a1287636cd00c429796957e83dddb669d1ebd609168a0a5bf0f914e9c0a4bc",
+      "baseline_2026-11-10_145427_EST/master_preprocessing/participant_qc.csv": "b1a67aaff83fe6b1d864ec4bdee00000b030fff5c06a7972a328fb5f74ef6ee6"
+    }
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.2"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Original Experiment 1 (HANDOFF Section 5): fixed C=1.0, no class weighting. Superseded by the revised notebook; kept for the record.",
+  "archived_at_local": "2026-11-16T12:53:50-05:00",
+  "archived_at_utc": "2026-11-16T17:53:50+00:00",
+  "original_paths": {
+    "01_band_power_cross_dataset_classification.ipynb": "01_band_power_cross_dataset_classification.ipynb",
+    "experiment_1/": "outputs/experiment_1/"
+  },
+  "sha256": {
+    "01_band_power_cross_dataset_classification.ipynb": "e940cbcb08ef6099045d3c1c3c70b5bba579c09f91e49630cb5d2d8d0b933d05",
+    "experiment_1/experiment_settings.json": "ce158f8a47ce2de7fa98c09cd809b4690237e92c56349f63d43aa1085e123d92",
+    "experiment_1/metrics.csv": "e170691f2cfad428c7cebd9f285d361437207a4ee2051cd87a3369eec1fc1a5b",
+    "experiment_1/primary_confusion_matrix.png": "c19ef6fc34e84b5b24e72d4e1fa54033314306dfa827e934d60519e4c88f0647",
+    "experiment_1/primary_roc_curve.png": "0a596a5c0da4dc798779ac351cdf1f79d91786815d21df291a167d6ed7d0e357",
+    "experiment_1/results_summary.md": "9fa44e5c32cbc26d976358b70f0f614caf48205b6e5b9abaaedcc10b9c2cfa10",
+    "experiment_1/test_predictions.csv": "51e1fb38e4d33368b2ef80fe47bb97e84987f567de29889fd4f1c051190d33b2"
+  }
+}
